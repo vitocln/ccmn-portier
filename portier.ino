@@ -93,7 +93,7 @@ bool answerCall() {
   phoneSerial.println("ATA");
   delay(1000);
   {
-    char *call = phoneSerial.read();
+    String call = phoneSerial.readString();
     Serial.print(call);
   }
   return true;
