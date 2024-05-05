@@ -6,7 +6,7 @@ const char VERSION[] = "1.0";
 const unsigned char PHONE_MODULE_RX_PIN = 7;
 const unsigned char PHONE_MODULE_TX_PIN = 8;
 
-const unsigned long ASNWERING_CALL_DELAY = 3000;
+const unsigned long ASNWERING_CALL_DELAY = 1000;
 const unsigned long CODE_TYPING_DELAY = 200;
 
 SoftwareSerial phoneSerial(PHONE_MODULE_RX_PIN, PHONE_MODULE_TX_PIN);
@@ -52,7 +52,7 @@ bool phoneCallLoop() {
           Serial.println("Unexpected incomming message while waiting for new calls.");
       }
     }
-    delay(3000);
+    delay(2000);
   }
 
   return true;
@@ -61,7 +61,7 @@ bool phoneCallLoop() {
 bool answerCall() {
   bool res = false;
   sendCommand("ATA");
-  delay(1000);
+  delay(500);
   switch (analyse_response(4, "CONNECT", "OK", "BEGIN", "CARRIER")) {
     case 1:
       Serial.println("Data call OK");
@@ -86,13 +86,7 @@ bool answerCall() {
 
 // Send code #61
 bool openDoor() {
-  sendCommand("AT+VTS=#");
-  delay(CODE_TYPING_DELAY);
-  if (!dtmfCmdCheck()) return false;
-  sendCommand("AT+VTS=6");
-  delay(CODE_TYPING_DELAY);
-  if (!dtmfCmdCheck()) return false;
-  sendCommand("AT+VTS=1");
+  sendCommand("AT+VTS=\"#,6,1\"");
   delay(CODE_TYPING_DELAY);
   if (!dtmfCmdCheck()) return false;
   return true;
@@ -116,7 +110,7 @@ bool dtmfCmdCheck() {
 
 void hangupCall() {
   sendCommand("AT+CHUP");
-  delay(1000);
+  delay(500);
   switch (analyse_response(2, "OK", "END")) {
     case 1:
       Serial.println("Hang up call OK");
