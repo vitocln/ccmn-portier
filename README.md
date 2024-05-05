@@ -12,7 +12,7 @@ The device waits indefinitely for phone call and does this series of actions eve
 3. Send DTMF code **#61**
 4. Wait a bit
 5. Hang up phone call
-6. Listen and wait again for new phone call
+6. Listen and wait again for new phone calls
 
 # Code setup
 
@@ -29,9 +29,18 @@ On Arch Linux, install these packages: `extra/arduino-avr-core` and `extra/ardui
 Open project with vscode
 
 ```sh
-code portier/
+code .
 ```
 
 install the [Arduino extension](https://marketplace.visualstudio.com/items?itemName=vsciot-vscode.vscode-arduino).
 
 Initialize the extension for **Arduino Uno** with vscode command `Arduino: initialize`
+
+# Ressources
+
+- [AT command manual](https://www.espruino.com/datasheets/SIM900_AT.pdf)
+- [Wiki DFRobot](https://wiki.dfrobot.com/SIM7600CE-T_4G(LTE)_Shield_V1.0_SKU_TEL0124)
+- [Entering commands during phone call](https://stackoverflow.com/questions/51697783/how-to-enter-an-option-during-voice-calls-using-at-commands)
+- [Serial comm issue with the module](https://forum.arduino.cc/t/no-flow-control-on-sim7600ce-t-4g-lte/879447)
+- [Troubleshooting 1](https://www.waveshare.com/wiki/Template:SIM7600X_4G_HAT_FAQ)
+- [Troubeshooting 2](https://forum.core-electronics.com.au/t/waveshare-sim7600x-h-4g-hat-with-arduino/18389/21?page=2)
