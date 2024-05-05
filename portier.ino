@@ -6,7 +6,7 @@ const char VERSION[] = "1.0";
 const unsigned char PHONE_MODULE_RX_PIN = 7;
 const unsigned char PHONE_MODULE_TX_PIN = 8;
 
-const unsigned long ASNWERING_CALL_DELAY = 2000;
+const unsigned long ASNWERING_CALL_DELAY = 3000;
 const unsigned long CODE_TYPING_DELAY = 200;
 
 SoftwareSerial phoneSerial(PHONE_MODULE_RX_PIN, PHONE_MODULE_TX_PIN);
@@ -52,6 +52,7 @@ bool phoneCallLoop() {
           Serial.println("Unexpected incomming message while waiting for new calls.");
       }
     }
+    delay(3000);
   }
 
   return true;
@@ -60,7 +61,8 @@ bool phoneCallLoop() {
 bool answerCall() {
   bool res = false;
   sendCommand("ATA");
-  switch (analyse_response(3, "CONNECT", "OK", "CARRIER")) {
+  delay(1000);
+  switch (analyse_response(4, "CONNECT", "OK", "BEGIN", "CARRIER")) {
     case 1:
       Serial.println("Data call OK");
       res = true;
@@ -70,6 +72,10 @@ bool answerCall() {
       res = true;
       break;
     case 3:
+      Serial.println("begin call");
+      res = true;
+      break;
+    case 4:
       Serial.println("Error no connection");
       break;
     default:
@@ -80,15 +86,23 @@ bool answerCall() {
 
 // Send code #61
 bool openDoor() {
-  bool res = false;
   sendCommand("AT+VTS=#");
   delay(CODE_TYPING_DELAY);
+  if (!dtmfCmdCheck()) return false;
   sendCommand("AT+VTS=6");
   delay(CODE_TYPING_DELAY);
+  if (!dtmfCmdCheck()) return false;
   sendCommand("AT+VTS=1");
+  delay(CODE_TYPING_DELAY);
+  if (!dtmfCmdCheck()) return false;
+  return true;
+}
+
+bool dtmfCmdCheck() {
+  bool res = false;
   switch (analyse_response(2, "OK", "ERROR")) {
     case 1:
-      Serial.println("Code #61 sent successfully.");
+      Serial.println("Code sent successfully.");
       res = true;
       break;
     case 2:
@@ -101,10 +115,14 @@ bool openDoor() {
 }
 
 void hangupCall() {
-  sendCommand("ATH");
-  switch (analyse_response(1, "OK")) {
+  sendCommand("AT+CHUP");
+  delay(1000);
+  switch (analyse_response(2, "OK", "END")) {
     case 1:
       Serial.println("Hang up call OK");
+      break;
+    case 2:
+      Serial.println("Call ended");
       break;
     default:
       Serial.println("Unexpected response while hanging up the call");
@@ -112,8 +130,6 @@ void hangupCall() {
 }
 
 void sendCommand(String cmd) {
-  Serial.print("Sending the AT command: ");
-  Serial.println(cmd);
   phoneSerial.println(cmd);
 }
 
@@ -128,12 +144,16 @@ unsigned char analyse_response(int n, ...) {
 
   if (phoneSerial.available() > 0) {
     String incomming = phoneSerial.readString();
-    Serial.print("message received: ");
-    Serial.println(incomming);
+    // Serial.print("DEBUG - begin of message received: ");
+    // Serial.println(incomming);
+    // Serial.println("DEBUG - end of message received");
 
     for (int i = 1; i <= n; ++i) {
-      if (strstr(incomming.c_str(), va_arg(args, char *)) != NULL) {
+      char *option = va_arg(args, char *);
+      if (strstr(incomming.c_str(), option) != NULL) {
         // Returns the matching option's position
+        Serial.print("DEBUG - Answer does contain: ");
+        Serial.println(option);
         ret = i;
         break;
       }

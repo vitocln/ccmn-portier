@@ -14,6 +14,18 @@ The device waits indefinitely for phone call and does this series of actions eve
 5. Hang up phone call
 6. Listen and wait again for new phone calls
 
+# Usage
+
+![img](img/hat.png "hat")
+
+Place the SIM card at the back of the SIM7600 device (you will probably need a SIM card adaptator).
+
+Connect the hat on top of the Arduino Uno and connect the antenna to the **MAIN** port.
+
+Power up the device by delevering **(7-23)V/2A** on pins **VIN** and **GND**.
+
+Press the **BOOT** button for at least one second and release it. Wait for the **GSM Signal Indicator LED** to blink. Fix LED means that it's trying to connect to the network. Blinking LED means that it is connected and ready.
+
 # Code setup
 
 The easiest way to use this project is by using the official **Arduino IDE**.
@@ -38,7 +50,7 @@ Initialize the extension for **Arduino Uno** with vscode command `Arduino: initi
 
 # Ressources
 
-- [AT command manual](https://www.espruino.com/datasheets/SIM900_AT.pdf)
+- [AT command manual](https://www.waveshare.com/w/upload/a/af/SIM7500_SIM7600_Series_AT_Command_Manual_V3.00.pdf)
 - [Wiki DFRobot](https://wiki.dfrobot.com/SIM7600CE-T_4G(LTE)_Shield_V1.0_SKU_TEL0124)
 - [Entering commands during phone call](https://stackoverflow.com/questions/51697783/how-to-enter-an-option-during-voice-calls-using-at-commands)
 - [Serial comm issue with the module](https://forum.arduino.cc/t/no-flow-control-on-sim7600ce-t-4g-lte/879447)
