@@ -1,0 +1,12 @@
+[Unit]
+Description=Automatic door opener service
+After=multi-user.target
+
+[Service]
+ExecStart=/usr/bin/python3 -u /home/pi/portier.py
+Restart=always
+User=pi
+WorkingDirectory=/home/pi
+
+[Install]
+WantedBy=multi-user.target
