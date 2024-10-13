@@ -66,6 +66,39 @@ systemctl daemon-reload
 systemctl enable --now portier.service
 ```
 
+### Tips
+
+#### Get internet access from the RPi in AP mode
+
+There is a way to still have access to internet from the RPi: use the connected machine (your laptop) as a forward point to the internet.
+
+To do that, we must in the laptop:
+- disable any input firewall rules to avoid conflicts
+- enable ip forwarding
+- enable forwarding between the two interfaces (wlan0 and eth0)
+- enable SNAT (masquerade)
+
+In the RPi:
+- add our laptop IP as default gateway
+- specify a DNS server
+
+**-> On the laptop**
+
+```bash
+sudo sysctl -w net.ipv4.ip_forward=1
+sudo iptables -A FORWARD -i wlan0 -o eth0 -j ACCEPT
+sudo iptables -A FORWARD -i eth0 -o wlan0 -j ACCEPT
+sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+```
+
+**-> On the RPi**
+
+```bash
+sudo ip route add default via 192.168.4.X
+# Use the laptop IP addr
+echo "nameserver 8.8.8.8" | sudo tee -a /etc/resolv.conf
+```
+
 ## Arduino variant
 
 - An Arduino Uno
@@ -74,12 +107,14 @@ systemctl enable --now portier.service
 
 The device waits indefinitely for phone call and does this series of actions every time:
 
-1. Answer to phone call
-2. Wait a bit
-3. Send DTMF code **#61**
+1. Check if we made a call wihtin 3 months, does it if not
+2. Wait for phone call
+3. Answer to phone call
 4. Wait a bit
-5. Hang up phone call
-6. Listen and wait again for new phone calls
+5. Send DTMF code **#61**
+6. Wait a bit
+7. Hang up phone call
+8. Listen and wait again for new phone calls
 
 ### Usage
 
